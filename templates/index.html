@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Security Assessment & Resilience Analyzer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6l-8-4z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="nav-title">Password Security Assessment</div>
+        <div class="nav-sub">& Resilience Analyzer</div>
+      </div>
+    </div>
+    <div class="nav-shield">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6l-8-4z"/>
+        <polyline points="9 12 11 14 15 10"/>
+      </svg>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <h1 class="hero-title">Test Your Password Strength</h1>
+    <p class="hero-sub">Enter a password below to analyze its security, understand vulnerabilities, and learn how to create stronger passwords.</p>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+
+    <!-- ROW 1: Input + Criteria -->
+    <div class="row">
+
+      <!-- Password Input Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Enter Password</div>
+            <div class="card-sub">Type or paste a password to analyze its security strength</div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Password</label>
+          <div class="input-wrapper">
+            <input
+              type="password"
+              id="passwordInput"
+              class="password-input"
+              placeholder="Enter a password to test..."
+              oninput="onPasswordInput()"
+              autocomplete="off"
+            />
+            <button class="toggle-btn" id="toggleBtn" onclick="togglePassword()" title="Show/hide password">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg id="eyeOffIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <div class="input-hint">Your password is analyzed locally and never sent to any server.</div>
+        </div>
+
+        <!-- Strength Meter -->
+        <div class="strength-section">
+          <div class="strength-header">
+            <div class="strength-label-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="s-icon">
+                <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6l-8-4z"/>
+              </svg>
+              <span class="strength-label">Strength Meter</span>
+            </div>
+            <span class="strength-text" id="strengthText">—</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" id="strengthBar"></div>
+          </div>
+          <div class="bar-scale">
+            <span>0%</span><span>50%</span><span>100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Criteria Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon criteria-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6l-8-4z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Security Criteria</div>
+            <div class="card-sub">Your password is checked against these security requirements</div>
+          </div>
+        </div>
+
+        <ul class="criteria-list">
+          <li class="criterion" id="c-length">
+            <span class="c-icon fail">✕</span>
+            <span>At least 12 characters <em>(8 minimum)</em></span>
+          </li>
+          <li class="criterion" id="c-upper">
+            <span class="c-icon fail">✕</span>
+            <span>Contains uppercase letters (A-Z)</span>
+          </li>
+          <li class="criterion" id="c-lower">
+            <span class="c-icon fail">✕</span>
+            <span>Contains lowercase letters (a-z)</span>
+          </li>
+          <li class="criterion" id="c-number">
+            <span class="c-icon fail">✕</span>
+            <span>Contains numbers (0-9)</span>
+          </li>
+          <li class="criterion" id="c-special">
+            <span class="c-icon fail">✕</span>
+            <span>Contains special characters (!@#$%...)</span>
+          </li>
+          <li class="criterion" id="c-common">
+            <span class="c-icon pass">✓</span>
+            <span>Not a common/dictionary password</span>
+          </li>
+          <li class="criterion" id="c-repeat">
+            <span class="c-icon pass">✓</span>
+            <span>No excessive repeated characters</span>
+          </li>
+        </ul>
+
+        <!-- Why Weak Card (inside criteria) -->
+        <div class="why-weak-card" id="whyWeak" style="display:none">
+          <div class="why-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="why-icon">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>Why is this password weak?</span>
+          </div>
+          <p id="whyWeakText">Enter a password to see its security analysis.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Entropy + Crack Time -->
+    <div class="row">
+      <!-- Entropy Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon entropy-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Password Entropy</div>
+          </div>
+        </div>
+        <div class="entropy-value"><span id="entropyValue">—</span> <span class="entropy-unit" id="entropyUnit"></span></div>
+        <p class="entropy-desc">Entropy measures password randomness. Higher is better. Aim for 60+ bits for strong security.</p>
+      </div>
+
+      <!-- Crack Time Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon crack-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Brute-Force Attack Estimate</div>
+            <div class="card-sub">How long would it take to crack this password?</div>
+          </div>
+        </div>
+
+        <div class="crack-box">
+          <div class="crack-inner">
+            <div class="crack-lightning">⚡</div>
+            <div>
+              <div class="crack-label">Estimated Time to Crack:</div>
+              <div class="crack-time" id="crackTime">—</div>
+            </div>
+          </div>
+        </div>
+
+        <details class="info-box">
+          <summary>What is a Brute-Force Attack?</summary>
+          <p>A brute-force attack is when an attacker tries every possible combination of characters until they find the correct password. Longer passwords with more character variety (uppercase, lowercase, numbers, symbols) create exponentially more combinations, making them much harder and more time-consuming to crack. Modern computers can try billions of combinations per second, which is why strong passwords are essential.</p>
+        </details>
+      </div>
+    </div>
+
+    <!-- ROW 3: Suggestions + Generator -->
+    <div class="row">
+
+      <!-- Suggestions Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon suggest-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Suggestions for Improvement</div>
+            <div class="card-sub">Follow these tips to make your password stronger</div>
+          </div>
+        </div>
+        <ul class="suggestions-list" id="suggestionsList">
+          <li class="suggestion-item empty-hint">Enter a password above to see personalized suggestions.</li>
+        </ul>
+      </div>
+
+      <!-- Generator Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon gen-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Password Generator</div>
+            <div class="card-sub">Generate a strong, random password instantly</div>
+          </div>
+        </div>
+
+        <div class="gen-controls">
+          <div class="slider-row">
+            <label>Length: <span id="lengthVal">16</span></label>
+            <input type="range" id="lengthSlider" min="8" max="32" value="16" oninput="document.getElementById('lengthVal').textContent=this.value" class="slider"/>
+          </div>
+
+          <div class="toggles">
+            <div class="toggle-row">
+              <span>Uppercase (A-Z)</span>
+              <label class="switch">
+                <input type="checkbox" id="genUpper" checked>
+                <span class="switch-thumb"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span>Lowercase (a-z)</span>
+              <label class="switch">
+                <input type="checkbox" id="genLower" checked>
+                <span class="switch-thumb"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span>Numbers (0-9)</span>
+              <label class="switch">
+                <input type="checkbox" id="genNumbers" checked>
+                <span class="switch-thumb"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span>Special (!@#$%...)</span>
+              <label class="switch">
+                <input type="checkbox" id="genSpecial" checked>
+                <span class="switch-thumb"></span>
+              </label>
+            </div>
+          </div>
+
+          <button class="gen-btn" onclick="generatePassword()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Generate Password
+          </button>
+
+          <div id="genResultWrap" style="display:none">
+            <div class="gen-result-label">Generated Password</div>
+            <div class="gen-result-box">
+              <span id="genResult" class="gen-result-text"></span>
+              <button class="copy-btn" id="copyBtn" onclick="copyGenerated()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copy
+              </button>
+            </div>
+            <button class="use-btn" onclick="useGeneratedPassword()">Use This Password</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEARN SECTION -->
+    <div class="card learn-card">
+      <div class="card-header">
+        <div class="card-icon learn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="card-title">Learn About Password Security</div>
+          <div class="card-sub">Essential knowledge for protecting your digital identity</div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <details class="accordion-item">
+          <summary class="accordion-summary">
+            <div class="acc-left">
+              <div class="acc-dot dot-green"></div>
+              What is Password Security?
+            </div>
+            <span class="acc-arrow">›</span>
+          </summary>
+          <div class="accordion-content">
+            <p>Password security refers to the practices and techniques used to create, store, and manage passwords that are resistant to unauthorized access. A secure password is one that is difficult for others to guess or crack through automated attacks, while still being usable by the person who created it. Good password security involves using long, complex, unique passwords for each account and storing them safely using a password manager.</p>
+          </div>
+        </details>
+
+        <details class="accordion-item">
+          <summary class="accordion-summary">
+            <div class="acc-left">
+              <div class="acc-dot dot-yellow"></div>
+              What is a Brute-Force Attack?
+            </div>
+            <span class="acc-arrow">›</span>
+          </summary>
+          <div class="accordion-content">
+            <p>A brute-force attack is a trial-and-error method used to decode encrypted data such as passwords. Attackers use software that systematically checks all possible passwords until the correct one is found. Modern computers can attempt billions of combinations per second. This is why password length and complexity are so important — every additional character or character type multiplies the number of possible combinations exponentially.</p>
+          </div>
+        </details>
+
+        <details class="accordion-item">
+          <summary class="accordion-summary">
+            <div class="acc-left">
+              <div class="acc-dot dot-cyan"></div>
+              Why Are Longer Passwords Safer?
+            </div>
+            <span class="acc-arrow">›</span>
+          </summary>
+          <div class="accordion-content">
+            <p>Password strength grows exponentially with length. A 8-character password using only lowercase letters has about 200 billion combinations. Add one more character and it becomes 5+ trillion. This exponential growth is why security experts recommend passwords of 16+ characters. A 16-character lowercase password has more combinations than a universe can compute in a lifetime — and mixing in uppercase, numbers, and symbols makes it astronomically harder.</p>
+          </div>
+        </details>
+
+        <details class="accordion-item">
+          <summary class="accordion-summary">
+            <div class="acc-left">
+              <div class="acc-dot dot-purple"></div>
+              Tips for Creating Secure Passwords
+            </div>
+            <span class="acc-arrow">›</span>
+          </summary>
+          <div class="accordion-content">
+            <p>Use at least 12–16 characters combining uppercase, lowercase, numbers, and symbols. Never reuse passwords across accounts. Avoid personal information like birthdays or names. Consider using a passphrase — a string of 4–5 random words — which is both memorable and highly secure. Use a password manager to generate and store unique passwords for every account. Enable two-factor authentication (2FA) wherever possible for an additional layer of protection.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    let analyzeTimeout = null;
+    let generatedPassword = '';
+
+    function onPasswordInput() {
+      const password = document.getElementById('passwordInput').value;
+      updateCriteriaFrontend(password);
+      updateStrengthFrontend(password);
+
+      clearTimeout(analyzeTimeout);
+      if (password) {
+        analyzeTimeout = setTimeout(() => analyzeBackend(password), 300);
+      } else {
+        document.getElementById('entropyValue').textContent = '—';
+        document.getElementById('entropyUnit').textContent = '';
+        document.getElementById('crackTime').textContent = '—';
+        document.getElementById('whyWeak').style.display = 'none';
+        document.getElementById('suggestionsList').innerHTML = '<li class="suggestion-item empty-hint">Enter a password above to see personalized suggestions.</li>';
+      }
+    }
+
+    function updateCriteriaFrontend(pw) {
+      const hasRepeated = /(.)\1{2,}/.test(pw);
+      setCriterion('c-length', pw.length >= 12);
+      setCriterion('c-upper', /[A-Z]/.test(pw));
+      setCriterion('c-lower', /[a-z]/.test(pw));
+      setCriterion('c-number', /[0-9]/.test(pw));
+      setCriterion('c-special', /[^A-Za-z0-9]/.test(pw));
+      setCriterion('c-repeat', !hasRepeated);
+    }
+
+    function setCriterion(id, pass) {
+      const el = document.getElementById(id);
+      const icon = el.querySelector('.c-icon');
+      if (pass) {
+        icon.textContent = '✓';
+        icon.className = 'c-icon pass';
+      } else {
+        icon.textContent = '✕';
+        icon.className = 'c-icon fail';
+      }
+    }
+
+    function updateStrengthFrontend(pw) {
+      const bar = document.getElementById('strengthBar');
+      const text = document.getElementById('strengthText');
+
+      if (!pw) {
+        bar.style.width = '0%';
+        bar.className = 'bar-fill';
+        text.textContent = '—';
+        text.className = 'strength-text';
+        return;
+      }
+
+      let score = 0;
+      if (pw.length >= 8) score++;
+      if (pw.length >= 12) score++;
+      if (pw.length >= 16) score++;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[a-z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+      const pct = Math.min(100, Math.round((score / 7) * 100));
+
+      let label, cls;
+      if (score <= 2) { label = 'Weak'; cls = 'weak'; }
+      else if (score <= 4) { label = 'Fair'; cls = 'fair'; }
+      else if (score <= 5) { label = 'Good'; cls = 'good'; }
+      else { label = 'Strong'; cls = 'strong'; }
+
+      bar.style.width = pct + '%';
+      bar.className = 'bar-fill ' + cls;
+      text.textContent = label;
+      text.className = 'strength-text st-' + cls;
+    }
+
+    async function analyzeBackend(password) {
+      try {
+        const res = await fetch('/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        const data = await res.json();
+
+        document.getElementById('entropyValue').textContent = data.entropy;
+        document.getElementById('entropyUnit').textContent = 'bits';
+        document.getElementById('crackTime').textContent = data.crack_time;
+
+        // Update common password criterion from zxcvbn score
+        setCriterion('c-common', data.score >= 2);
+
+        // Suggestions
+        const sl = document.getElementById('suggestionsList');
+        if (data.feedback && data.feedback.length > 0) {
+          sl.innerHTML = data.feedback.map(s => `<li class="suggestion-item"><span class="sugg-arrow">→</span>${s}</li>`).join('');
+        } else if (data.score >= 3) {
+          sl.innerHTML = '<li class="suggestion-item pass-hint">✓ Your password looks strong! Consider using a password manager to store it safely.</li>';
+        } else {
+          sl.innerHTML = '<li class="suggestion-item empty-hint">Keep typing to get suggestions.</li>';
+        }
+
+        // Why weak
+        const whyEl = document.getElementById('whyWeak');
+        const whyText = document.getElementById('whyWeakText');
+        if (data.score <= 1) {
+          whyEl.style.display = 'block';
+          let msg = 'This password is weak and vulnerable to attacks.';
+          if (data.warning) msg += ' ' + data.warning + '.';
+          const issues = [];
+          const pw = document.getElementById('passwordInput').value;
+          if (pw.length < 12) issues.push('too short (needs 12+ characters)');
+          if (!/[A-Z]/.test(pw)) issues.push('missing uppercase letters');
+          if (!/[0-9]/.test(pw)) issues.push('missing numbers');
+          if (!/[^A-Za-z0-9]/.test(pw)) issues.push('missing special characters');
+          if (issues.length) msg += ' Major issues: ' + issues.join(', ') + '.';
+          whyText.textContent = msg;
+        } else {
+          whyEl.style.display = 'none';
+        }
+
+      } catch(e) {
+        console.error('Analyze error', e);
+      }
+    }
+
+    async function generatePassword() {
+      const length = parseInt(document.getElementById('lengthSlider').value);
+      const uppercase = document.getElementById('genUpper').checked;
+      const lowercase = document.getElementById('genLower').checked;
+      const numbers = document.getElementById('genNumbers').checked;
+      const special = document.getElementById('genSpecial').checked;
+
+      try {
+        const res = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ length, uppercase, lowercase, numbers, special })
+        });
+        const data = await res.json();
+        generatedPassword = data.password;
+        document.getElementById('genResult').textContent = data.password;
+        document.getElementById('genResultWrap').style.display = 'block';
+        document.getElementById('copyBtn').textContent = '';
+        document.getElementById('copyBtn').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy`;
+      } catch(e) {
+        console.error('Generate error', e);
+      }
+    }
+
+    function copyGenerated() {
+      if (!generatedPassword) return;
+      navigator.clipboard.writeText(generatedPassword).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.innerHTML = '✓ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy`;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function useGeneratedPassword() {
+      if (!generatedPassword) return;
+      const input = document.getElementById('passwordInput');
+      input.value = generatedPassword;
+      input.type = 'text';
+      document.getElementById('eyeIcon').style.display = 'none';
+      document.getElementById('eyeOffIcon').style.display = 'block';
+      onPasswordInput();
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('passwordInput');
+      const eye = document.getElementById('eyeIcon');
+      const eyeOff = document.getElementById('eyeOffIcon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        eye.style.display = 'none';
+        eyeOff.style.display = 'block';
+      } else {
+        input.type = 'password';
+        eye.style.display = 'block';
+        eyeOff.style.display = 'none';
+      }
+    }
+  </script>
+  <!-- Mouse glow follower -->
+  <div id="mouseGlow"></div>
+
+  <script>
+    const glow = document.getElementById('mouseGlow');
+
+    document.addEventListener('mousemove', (e) => {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top  = e.clientY + 'px';
+    });
+
+    document.addEventListener('mousedown', () => glow.classList.add('clicking'));
+    document.addEventListener('mouseup',   () => glow.classList.remove('clicking'));
+  </script>
+</body>
+</html>
