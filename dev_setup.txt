@@ -1,5 +1,5 @@
 ===============================
-PASSSECURE - LOCAL RUN STEPS
+ LOCAL RUN STEPS  (git)
 ===============================
 
 1) Go to project folder
