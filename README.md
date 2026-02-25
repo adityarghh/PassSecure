@@ -299,6 +299,4 @@ MIT License — free to use, modify, and distribute.
 
 <div align="center">
 
-Built with 🔐 and way too much attention to `box-shadow` layering.
-
 </div>
